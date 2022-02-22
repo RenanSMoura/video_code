@@ -15,7 +15,7 @@ stores = [
 ]
 
 
-@app.route("/stores")
+@app.route("/store")
 def get_store_list():
     return jsonify({'stores': stores})
 
@@ -33,21 +33,19 @@ def create_store():
 
 @app.route("/store/<string:name>")
 def get_store(name):
-    print(name)
     for store in stores:
-        print(f"store ${store}")
+        print(store)
         if store['name'] == name:
             return jsonify(store)
-        else:
-            return jsonify({'message': 'store not found'})
-    pass
+
+    return jsonify({'message': 'store not found'})
 
 
 @app.route("/store/<string:name>/item", methods=["POST"])
 def create_store_item(name):
+    request_data = request.get_json()
     for store in stores:
         if store['name'] == name:
-            request_data = request.get_json()
             new_item = {
                 'name': request_data['name'],
                 'price': request_data['price']
