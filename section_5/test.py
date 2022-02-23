@@ -15,10 +15,10 @@ cursor.execute(insert_query, user)
 
 users = [
     (2, 'jose', 'asdf'),
-    (3, 'jose', 'asdf'),
-    (4, 'jose', 'asdf'),
-    (5, 'jose', 'asdf'),
-    (6, 'jose', 'asdf')
+    (3, 'cenoura', 'eee'),
+    (4, 'cacau', 'tttt'),
+    (5, 'pipoca', 'asdf'),
+    (6, 'tati', 'asdf')
 ]
 
 cursor.executemany(insert_query, users)
