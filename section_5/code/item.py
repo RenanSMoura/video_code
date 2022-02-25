@@ -32,12 +32,18 @@ class Item(Resource):
             return {'message': f"An item with {name} name already exists."}, 400
 
         data = self._check_and_get_parser()
+
         item = {'name': name, 'price': data['price']}
-        self.create_item(name, data['price'])
+
+        try:
+            self.insert(name, data['price'])
+        except:
+            return {'Message': 'An error occurred inserting the item'}, 500
 
         return item, 201
 
-    def create_item(self, name, price):
+    @classmethod
+    def insert(cls, name, price):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
         query = "INSERT INTO items VALUES(?,?)"
@@ -51,7 +57,7 @@ class Item(Resource):
 
         item = self.find_by_name(name)
         if item is None:
-            self.create_item(name, data['price'])
+            self.insert(name, data['price'])
             item = {'name': name, 'price': data['price']}
         else:
             self.update_item(name, data['price'])
@@ -59,11 +65,12 @@ class Item(Resource):
 
         return item
 
-    def update_item(self, name, price):
+    @classmethod
+    def update_item(cls, name, price):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
-        query = "UPDATE items SET name=?, price=? WHERE name=?"
-        cursor.execute(query, (name, price, name))
+        query = "UPDATE items SET price=? WHERE name=?"
+        cursor.execute(query, (price, name))
         connection.commit()
         connection.close()
 
@@ -90,5 +97,15 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        global items
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+        query = "SELECT * FROM items"
+        items = []
+
+        for row in cursor.execute(query):
+            items.append({
+                'name': row[0],
+                'price': row[1]
+            })
+
         return items, 200
